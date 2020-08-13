@@ -1,7 +1,6 @@
 package com.im;
 
-import com.im.server.http.HttpServer;
-import io.netty.channel.ChannelFuture;
+import com.im.server.WebSocketServer;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.CommandLineRunner;
@@ -15,7 +14,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 public class NettyimApplication implements CommandLineRunner {
     //注入启动http启动了类
     @Autowired
-    private HttpServer server;
+    private WebSocketServer server;
     //获取配置文件中的端口
     @Value("${netty.port}")
     private int port;
@@ -34,12 +33,11 @@ public class NettyimApplication implements CommandLineRunner {
      */
     @Override
     public void run(String... args) throws Exception {
-        ChannelFuture f = server.server(port);
+        server.webSocketServer(port);
         Runtime.getRuntime().addShutdownHook(new Thread() {
             public void run() {
-                NettyimApplication.this.server.close();
+                NettyimApplication.this.server.destory();
             }
         });
-        f.channel().closeFuture().sync();
     }
 }
